@@ -9,3 +9,173 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  from      String
+  to        String[]
+  cc        String[]
+  replyTo   String?
+  date      DateTime
+  labels    String[]
+  threadId  String
+  historyId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Connection {
+  id             Int      @id @default(autoincrement())
+  owner          String
+  contact        String
+  toOwner        Int
+  fromOwner      Int
+  toAndFromOwner Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([owner, contact])
+}
+
+model Person {
+  id                  Int       @id @default(autoincrement())
+  email               String
+  avatar              String?
+  bio                 String?
+  emailProvider       Boolean   @default(false)
+  location            String?
+  site                String?
+  timezone            String?
+  utcOffset           Int?
+  nameFamilyName      String?
+  nameGivenName       String?
+  nameFullName        String?
+  employmentDomain    String?
+  employmentName      String?
+  employmentRole      String?
+  employmentSeniority String?
+  employmentSubRole   String?
+  employmentTitle     String?
+  geoCity             String?
+  geoCountry          String?
+  geoCountryCode      String?
+  geoLat              Float?
+  geoLng              Float?
+  geoState            String?
+  geoStateCode        String?
+  facebookHandle      String?
+  githubId            String?
+  githubHandle        String?
+  githubAvatar        String?
+  githubBlog          String?
+  githubCompany       String?
+  githubFollowers     Int?
+  githubFollowing     Int?
+  googleplusHandle    String?
+  gravatarHandle      String?
+  gravatarAvatar      String[]
+  gravatarAvatars     String[]
+  gravatarUrls        String[]
+  linkedinHandle      String?
+  twitterId           String?
+  twitterHandle       String?
+  twitterAvatar       String?
+  twitterBio          String?
+  twitterFavorites    Int?
+  twitterFollowers    Int?
+  twitterFollowing    Int?
+  twitterLocation     String?
+  twitterSite         String?
+  twitterStatuses     Int?
+  companyId           Int?
+  indexedAt           DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@unique(email)
+}
+
+model Company {
+  id                            Int       @id @default(autoincrement())
+  domain                        String
+  description                   String?
+  domainAliases                 String[]
+  emailProvider                 Boolean   @default(false)
+  location                      String?
+  logo                          String?
+  name                          String?
+  phone                         String?
+  tags                          String[]
+  tech                          String[]
+  techCategories                String[]
+  ticker                        String?
+  timeZone                      String?
+  type                          String?
+  utcOffset                     Int?
+  categoryIndustry              String?
+  categoryIndustryGroup         String?
+  categoryNaicsCode             String?
+  categorySector                String?
+  categorySicCode               String?
+  categorySubIndustry           String?
+  geoCity                       String?
+  geoCountry                    String?
+  geoCountryCode                String?
+  geoLat                        Float?
+  geoLng                        Float?
+  geoPostalCode                 String?
+  geoState                      String?
+  geoStateCode                  String?
+  geoStreetName                 String?
+  geoStreetNumber               String?
+  geoSubPremise                 String?
+  identifiersUsEin              String?
+  metricsAlexaGlobalRank        Int?
+  metricsAlexaUsRank            Int?
+  metricsAnnualRevenue          Int?
+  metricsEmployees              Int?
+  metricsEmployeesRange         String?
+  metricsEstimatedAnnualRevenue String?
+  metricsFiscalYearEnd          Int?
+  metricsMarketCap              Int?
+  metricsRaised                 Int?
+  parentDomain                  String?
+  siteEmailAddresses            String[]
+  sitePhoneNumbers              String[]
+  ultimateParentDomain          String?
+  crunchbaseHandle              String?
+  facebookHandle                String?
+  facebookLikes                 Int?
+  twitterId                     String?
+  twitterHandle                 String?
+  twitterAvatar                 String?
+  twitterBio                    String?
+  twitterFollowers              Int?
+  twitterFollowing              Int?
+  twitterLocation               String?
+  twitterSite                   String?
+  indexedAt                     DateTime?
+  createdAt                     DateTime  @default(now())
+  updatedAt                     DateTime  @updatedAt
+
+  @@unique(domain)
+}
+
+model ClearbitEnrichment {
+  id                   Int       @id @default(autoincrement())
+  email                String
+  raw                  Json?
+  personId             Int?
+  personNameFamilyName String?
+  personNameGivenName  String?
+  personNameFullName   String?
+  personIndexedAt      DateTime?
+  companyId            Int?
+  companyDomain        String?
+  companyName          String?
+  companyIndexedAt     DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@unique(email)
+}

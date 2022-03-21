@@ -1,0 +1,76 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `emailprovider` on the `Person` table. All the data in the column will be lost.
+
+*/
+-- AlterTable
+ALTER TABLE "Person" DROP COLUMN "emailprovider",
+ADD COLUMN     "emailProvider" BOOLEAN NOT NULL DEFAULT false;
+
+-- CreateTable
+CREATE TABLE "Company" (
+    "id" SERIAL NOT NULL,
+    "domain" TEXT NOT NULL,
+    "description" TEXT,
+    "domainAliases" TEXT[],
+    "emailProvider" BOOLEAN NOT NULL DEFAULT false,
+    "location" TEXT,
+    "logo" TEXT,
+    "name" TEXT,
+    "phone" TEXT,
+    "tags" TEXT[],
+    "tech" TEXT[],
+    "techCategories" TEXT[],
+    "ticker" TEXT,
+    "timeZone" TEXT,
+    "type" TEXT,
+    "utcOffset" INTEGER,
+    "categoryIndustry" TEXT,
+    "categoryIndustryGroup" TEXT,
+    "categoryNaicsCode" TEXT,
+    "categorySector" TEXT,
+    "categorySicCode" TEXT,
+    "categorySubIndustry" TEXT,
+    "geoCity" TEXT,
+    "geoCountry" TEXT,
+    "geoCountryCode" TEXT,
+    "geoLat" DOUBLE PRECISION,
+    "geoLng" DOUBLE PRECISION,
+    "geoPostalCode" TEXT,
+    "geoState" TEXT,
+    "geoStateCode" TEXT,
+    "geoStreetName" TEXT,
+    "geoStreetNumber" TEXT,
+    "geoSubPremise" TEXT,
+    "identifiersUsEin" TEXT,
+    "metricsAlexaGlobalRank" INTEGER,
+    "metricsAlexaUsRank" INTEGER,
+    "metricsAnnualRevenue" INTEGER,
+    "metricsEmployees" INTEGER,
+    "metricsEmployeesRange" TEXT,
+    "metricsEstimatedAnnualRevenue" TEXT,
+    "metricsFiscalYearEnd" INTEGER,
+    "metricsMarketCap" INTEGER,
+    "metricsRaised" INTEGER,
+    "parentDomain" TEXT,
+    "siteEmailAddresses" TEXT[],
+    "sitePhoneNumbers" TEXT[],
+    "ultimateParentDomain" TEXT,
+    "crunchbaseHandle" TEXT,
+    "facebookHandle" TEXT,
+    "facebookLikes" INTEGER,
+    "twitterId" TEXT,
+    "twitterHandle" TEXT,
+    "twitterAvatar" TEXT,
+    "twitterBio" TEXT,
+    "twitterFollowers" INTEGER,
+    "twitterFollowing" INTEGER,
+    "twitterLocation" TEXT,
+    "twitterSite" TEXT,
+    "indexedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Company_pkey" PRIMARY KEY ("id")
+);

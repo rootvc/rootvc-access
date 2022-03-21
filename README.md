@@ -1,2 +1,17 @@
-# rootvc-access-prisma
-RootVC Access Prisma config for AWS RDS Aurora (Postgres)
+# rootvc-access
+RootVC Access monorepo for AWS with multiple components
+
+## Schema Definition and Migration with Prisma
+Managed by Prisma, hosted on RDS Aurora (Postgres).
+`/prisma`
+
+## Workers and Jobs
+Graphile workers for both scheduled and triggered jobs. Graphile uses Postgres as a durable job queue.
+`/tasks`
+- create_email (called by Zapier)
+
+## Future Features
+- GraphQL or REST API
+- Infrastructure configuration with IaSQL
+- Potentially move email->job Zapier to a job using Google's Gmail APIs
+- web frontend for searching the db
