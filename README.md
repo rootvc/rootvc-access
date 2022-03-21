@@ -2,7 +2,7 @@
 RootVC Access monorepo for AWS with multiple components
 
 ## Schema Definition and Migration with Prisma
-Managed by Prisma, hosted on RDS Aurora (Postgres).
+Prisma, hosted on RDS Aurora (Postgres).
 `/prisma`
 
 ## Workers and Jobs
@@ -11,8 +11,8 @@ Graphile workers for both scheduled and triggered jobs. Graphile uses Postgres a
 - create_email (called when a new email is received or sent)
 
 ## Endpoints
-Express endpoints, currently only used to interface with Zapier
-`/routes`
+Express server endpoints, currently only used to interface with Zapier
+`/server`
 
 ## Future Features
 - GraphQL or REST API

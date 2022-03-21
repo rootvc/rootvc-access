@@ -1,14 +1,27 @@
 {
   "name": "rootvc-access",
   "version": "0.0.0",
+  "description": "RootVC Access monorepo",
+  "author": "Root Ventures",
+  "license": "MIT",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "node ./endpoints/bin/www"
+    "server": "node ./server/bin/www"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.21",
+    "prisma": "^3.11.0",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.2"
   },
   "dependencies": {
+    "@prisma/client": "^3.11.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^16.0.0",
     "express": "~4.16.1",
+    "graphile-worker": "^0.12.2",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1"
   }
