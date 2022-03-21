@@ -1,24 +1,15 @@
 {
-  "name": "rootvc-access-prisma",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type":"commonjs",
+  "name": "rootvc-access",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^17.0.21",
-    "prisma": "^3.11.0",
-    "ts-node": "^10.7.0",
-    "typescript": "^4.6.2"
+    "start": "node ./endpoints/bin/www"
   },
   "dependencies": {
-    "@prisma/client": "^3.11.0",
-    "dotenv": "^16.0.0",
-    "graphile-worker": "^0.12.2"
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1"
   }
 }

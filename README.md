@@ -8,7 +8,11 @@ Managed by Prisma, hosted on RDS Aurora (Postgres).
 ## Workers and Jobs
 Graphile workers for both scheduled and triggered jobs. Graphile uses Postgres as a durable job queue.
 `/tasks`
-- create_email (called by Zapier)
+- create_email (called when a new email is received or sent)
+
+## Endpoints
+Express endpoints, currently only used to interface with Zapier
+`/routes`
 
 ## Future Features
 - GraphQL or REST API
