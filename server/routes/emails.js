@@ -6,6 +6,7 @@ const prisma = new Prisma.PrismaClient();
 router.post('/emails', async (req, res) => {
   const body = req.body;
 
+  // Collect data from webhook
   const data = {
     "from": body.from,
     "to": body.to,
@@ -25,6 +26,7 @@ router.post('/emails', async (req, res) => {
     where: { messageId: data.messageId }
   }).then(res => res !== null);
 
+  // Create message, only if new messageId
   const message = await prisma.Message.upsert({
     where: { messageId: data.messageId },
     update: {},
@@ -32,12 +34,9 @@ router.post('/emails', async (req, res) => {
   })
   .then(res => { console.log('Message created: ', res); return res });
   
+  // Process each participant in the email
   participants.filter(p => p != owner).forEach(async (p) => {
-    await prisma.Connection.findFirst({
-      where: { owner: owner, contact: p }
-    })
-    .then(res => { res ? console.log('Connection found: ', res) : console.log('Connection not found'); return res; });
-
+    // Create connection pair if doesn't exist, otherwise increment
     var updateData = { toAndFromOwner: { increment: 1 } };
     updateData[isFromOwner ? 'fromOwner' : 'toOwner'] = { increment: 1 };
 
@@ -54,7 +53,7 @@ router.post('/emails', async (req, res) => {
         toAndFromOwner: 1,
       },
     })
-    .then(res => { console.log('Connection upserted: ', res) });
+    .then(res => { console.log('Connection created/updated: ', res) });
 
     // TODO: Insert Person
     // TODO: Enrich Person
