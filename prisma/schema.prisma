@@ -20,8 +20,11 @@ model Message {
   labels    String[]
   threadId  String
   historyId String
+  messageId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique(messageId)
 }
 
 model Connection {
