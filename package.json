@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "server": "node ./server/app.js"
+    "start": "node ./server/app.js"
   },
   "devDependencies": {
     "@types/express": "4.17.13",

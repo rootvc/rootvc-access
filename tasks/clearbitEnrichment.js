@@ -13,40 +13,41 @@ module.exports = async (payload, helpers) => {
     if (!record) { // if ClearbitEnrichment record doesn't exist, fetch it from API
         await clearbit.Enrichment.find({ email: email })
         .then(res => {
-            _createClearbitEnrichment(email, res)
+            const newRecord = _createClearbitEnrichment(email, res);
             helpers.logger.info('API ClearbitEnrichment: ' + res.person.email);
-            return res;
+            return newRecord;
         })
         .then(res => {
-            const person = res.person
-            const company = res.company;
-        
-            // enrich Person record
-            if (person) {
-                _upsertPerson(person, company.id)
-                .then(res => { helpers.logger.info('Enriched Person: ' + person.email) });
-            } else {
-                helpers.logger.info('API ClearbitEnrichment: Person ' + person.email + ' not found');
-            };
-        
-            // enrich Company record
-            // if (company) {
-            //     helpers.logger.info('ClearbitEnrichment: Company found: ' + company.name);
-            //     _upsertCompany(company)
-            //     .then(res => { helpers.logger.info('Enriched Company: ', + JSON.stringify(res)) });
-            // } else {
-            //     helpers.logger.info('API: ClearbitEnrichment: Company not found');
-            // };
+            record = res;
+            return res;
         })
         .catch(async (err) => { // TODO: Find the actual error Enrichment returns when NotFound
             helpers.logger.info('NOT FOUND: API ClearbitEnrichment could not find Enrichment for: ' + email);
             await prisma.ClearbitEnrichment.create({
                 data: { email: email }
             })
-        })
+        });
     } else {
         helpers.logger.info('CACHE HIT: ClearbitEnrichment: ' + email);
     }
+    person = record.raw ? record.raw.person : null;
+    company = record.raw ? record.raw.company : null;
+
+    // enrich Person record
+    if (person) {
+        _upsertPerson(person, company ? company.id : null)
+        .then(res => { helpers.logger.info('Enriched Person: ' + person.email) });
+    } else {
+        helpers.logger.info('ClearbitEnrichment: Person ' + email + ' not found');
+    };
+
+    // enrich Company record
+    if (company) {
+        _upsertCompany(company)
+        .then(res => { helpers.logger.info('Enriched Company: ' + company.domain) });
+    } else {
+        helpers.logger.info('ClearbitEnrichment: Company ' + email.split('@')[1] + ' not found');
+    };
 };
 
 const _createClearbitEnrichment = async (email, data) => {
@@ -66,15 +67,15 @@ const _createClearbitEnrichment = async (email, data) => {
         companyIndexedAt: company ? company.indexedAt : null,
     };
 
-    await prisma.ClearbitEnrichment.create({
+    return await prisma.ClearbitEnrichment.create({
         data: record
     })
 };
 
 const _upsertPerson = async (person, companyId) => {
     const data = {
-        "email": person.email,
         "clearbitId": person.id,
+        "email": person.email,
         "avatar": person.avatar,
         "bio": person.bio,
         "emailProvider": person.emailProvider,
@@ -110,7 +111,7 @@ const _upsertPerson = async (person, companyId) => {
         "gravatarHandle": person.gravatar.handle,
         "gravatarAvatar": person.gravatar.avatar,
         "gravatarAvatars": person.gravatar.avatars ? person.gravatar.avatars.map(a => a.url) : [],
-        "gravatarUrls": person.gravatar.urls || [],
+        "gravatarUrls": person.gravatar.urls ? person.gravatar.urls.map(a => a.value) : [],
         "linkedinHandle": person.linkedin.handle,
         "twitterId": String(person.twitter.id),
         "twitterHandle": person.twitter.handle,
@@ -126,17 +127,79 @@ const _upsertPerson = async (person, companyId) => {
         "indexedAt": person.indexedAt,
     };
 
-    await prisma.Person.upsert({
+    return await prisma.Person.upsert({
         where: { email: person.email },
         update: data,
         create: data,
     });
 };
 
-const _upsertCompany = async (data) => {
-    await prisma.Company.upsert({
-      where: { domain: data.domain },
-      update: data,
-      create: data,
+const _upsertCompany = async (company) => {
+    const data = {
+        "clearbitId": company.id,
+        "domain": company.domain,
+        "description": company.description,
+        "domainAliases": company.domainAliases || [],
+        "emailProvider": company.emailProvider,
+        "location": company.location,
+        "logo": company.logo,
+        "name": company.name,
+        "phone": company.phone,
+        "tags": company.tags || [],
+        "tech": company.tech || [],
+        "techCategories": company.techCategories || [],
+        "ticker": company.ticker,
+        "timeZone": company.timeZone,
+        "type": company.type,
+        "utcOffset": company.utcOffset,
+        "categoryIndustry": company.category.industry,
+        "categoryIndustryGroup": company.category.industryGroup,
+        "categoryNaicsCode": company.category.naicsCode,
+        "categorySector": company.category.sector,
+        "categorySicCode": company.category.sicCode,
+        "categorySubIndustry": company.category.subIndustry,
+        "geoCity": company.geo.city,
+        "geoCountry": company.geo.country,
+        "geoCountryCode": company.geo.countryCode,
+        "geoLat": company.geo.lat,
+        "geoLng": company.geo.lng,
+        "geoPostalCode": company.geo.postalCode,
+        "geoState": company.geo.state,
+        "geoStateCode": company.geo.stateCode,
+        "geoStreetName": company.geo.streetName,
+        "geoStreetNumber": company.geo.streetNumber,
+        "geoSubPremise": company.geo.subPremise,
+        "identifiersUsEin": company.identifiers.usEin,
+        "metricsAlexaGlobalRank": company.metrics.alexaGlobalRank,
+        "metricsAlexaUsRank": company.metrics.alexaUsRank,
+        "metricsAnnualRevenue": company.metrics.annualRevenue,
+        "metricsEmployees": company.metrics.employees,
+        "metricsEmployeesRange": company.metrics.employeesRange,
+        "metricsEstimatedAnnualRevenue": company.metrics.estimatedAnnualRevenue,
+        "metricsFiscalYearEnd": company.metrics.fiscalYearEnd,
+        "metricsMarketCap": company.metrics.marketCap,
+        "metricsRaised": company.metrics.raised,
+        "parentDomain": company.parentDomain,
+        "siteEmailAddresses": company.site.emailAddresses || [],
+        "sitePhoneNumbers": company.site.phoneNumbers || [],
+        "ultimateParentDomain": company.ultimateParentDomain,
+        "crunchbaseHandle": company.crunchbase.handle,
+        "facebookHandle": company.facebook.handle,
+        "facebookLikes": company.facebook.likes,
+        "twitterId": String(company.twitter.id),
+        "twitterHandle": company.twitter.handle,
+        "twitterAvatar": company.twitter.avatar,
+        "twitterBio": company.twitter.bio,
+        "twitterFollowers": company.twitter.followers,
+        "twitterFollowing": company.twitter.following,
+        "twitterLocation": company.twitter.location,
+        "twitterSite": company.twitter.site,
+        "indexedAt": company.indexedAt,
+    };
+
+    return await prisma.Company.upsert({
+        where: { domain: company.domain },
+        update: data,
+        create: data,
     });
 };
