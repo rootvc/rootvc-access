@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -5,7 +6,6 @@ const bodyParser = require('body-parser')
 const indexRouter = require('./routes/index');
 const emailsRouter = require('./routes/emails');
 const { run } = require('graphile-worker');
-require('dotenv').config();
 
 var app = express();
 app.use(bodyParser.json());

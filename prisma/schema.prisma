@@ -42,6 +42,7 @@ model Connection {
 
 model Person {
   id                  Int       @id @default(autoincrement())
+  clearbitId          String?
   email               String
   avatar              String?
   bio                 String?
@@ -76,7 +77,7 @@ model Person {
   githubFollowing     Int?
   googleplusHandle    String?
   gravatarHandle      String?
-  gravatarAvatar      String[]
+  gravatarAvatar      String?
   gravatarAvatars     String[]
   gravatarUrls        String[]
   linkedinHandle      String?
@@ -90,16 +91,18 @@ model Person {
   twitterLocation     String?
   twitterSite         String?
   twitterStatuses     Int?
-  companyId           Int?
+  companyId           String?
   indexedAt           DateTime?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
   @@unique(email)
+  @@unique(clearbitId)
 }
 
 model Company {
   id                            Int       @id @default(autoincrement())
+  clearbitId                    String
   domain                        String
   description                   String?
   domainAliases                 String[]
@@ -162,23 +165,22 @@ model Company {
   updatedAt                     DateTime  @updatedAt
 
   @@unique(domain)
+  @@unique(clearbitId)
 }
 
 model ClearbitEnrichment {
-  id                   Int       @id @default(autoincrement())
-  email                String
-  raw                  Json?
-  personId             Int?
-  personNameFamilyName String?
-  personNameGivenName  String?
-  personNameFullName   String?
-  personIndexedAt      DateTime?
-  companyId            Int?
-  companyDomain        String?
-  companyName          String?
-  companyIndexedAt     DateTime?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  id                 Int       @id @default(autoincrement())
+  email              String
+  raw                Json?
+  personId           String?
+  personNameFullName String?
+  personIndexedAt    DateTime?
+  companyId          String?
+  companyDomain      String?
+  companyName        String?
+  companyIndexedAt   DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   @@unique(email)
 }
