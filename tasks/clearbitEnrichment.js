@@ -58,18 +58,25 @@ const _createClearbitEnrichment = async (email, data) => {
     const person = data.person;
     const company = data.company;
 
-    // TODO: Create an empty data object and merge only non-null values with it
     const record = {
         email: email,
         raw: data,
-        personId: person ? person.id : null,
-        personNameFullName: person ? person.name.fullName : null,
-        personIndexedAt: person ? person.indexedAt : null,
-        companyId: company ? company.id : null,
-        companyDomain: company ? company.domain : null,
-        companyName: company ? company.name : null,
-        companyIndexedAt: company ? company.indexedAt : null,
     };
+
+    if (person) {
+        record.personId = person.id;
+        record.personNameFullName = person.name.fullName;
+        record.personNameGivenName = person.name.givenName;
+        record.personNameFamilyName = person.name.familyName;
+        record.personIndexedAt = person.indexedAt;
+    }
+
+    if (company) {
+        record.companyId = company.id;
+        record.companyName = company.name;
+        record.companyDomain = company.domain;
+        record.companyIndexedAt = company.indexedAt;
+    }
 
     return await prisma.ClearbitEnrichment.create({
         data: record
