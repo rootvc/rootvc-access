@@ -33,11 +33,12 @@ async function main() {
   await runner.promise;
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
-
-// TODO: Remove from connection pool
+main()
+  .catch((err) => {
+    throw err;
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
 
 module.exports = app;
