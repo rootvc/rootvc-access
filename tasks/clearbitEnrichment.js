@@ -21,11 +21,15 @@ module.exports = async (payload, helpers) => {
             record = res;
             return res;
         })
-        .catch(async (err) => { // TODO: Find the actual error Enrichment returns when NotFound
+        .catch(clearbit.Enrichment.NotFoundError, async (err) => {
             helpers.logger.info('NOT FOUND: API ClearbitEnrichment could not find Enrichment for: ' + email);
-            await prisma.ClearbitEnrichment.create({
+            record = await prisma.ClearbitEnrichment.create({
                 data: { email: email }
             })
+        })
+        .catch(clearbit.Enrichment.QueuedError, async (err) => {
+            helpers.logger.info('QUEUED: API ClearbitEnrichment threw a QueuedError: ' + email);
+            throw err;
         });
     } else {
         helpers.logger.info('CACHE HIT: ClearbitEnrichment: ' + email);
@@ -36,7 +40,7 @@ module.exports = async (payload, helpers) => {
     // enrich Person record
     if (person) {
         _upsertPerson(person, company ? company.id : null)
-        .then(res => { helpers.logger.info('Enriched Person: ' + person.email) });
+        .then(res => { helpers.logger.info('Enriched Person: ' + email) });
     } else {
         helpers.logger.info('ClearbitEnrichment: Person ' + email + ' not found');
     };
@@ -44,9 +48,9 @@ module.exports = async (payload, helpers) => {
     // enrich Company record
     if (company) {
         _upsertCompany(company)
-        .then(res => { helpers.logger.info('Enriched Company: ' + company.domain) });
+        .then(res => { helpers.logger.info('Enriched Company for: ' + email) });
     } else {
-        helpers.logger.info('ClearbitEnrichment: Company ' + email.split('@')[1] + ' not found');
+        helpers.logger.info('ClearbitEnrichment: Company for ' + email + ' not found');
     };
 };
 
