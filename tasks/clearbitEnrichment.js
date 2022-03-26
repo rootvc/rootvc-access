@@ -13,7 +13,7 @@ module.exports = async (payload, helpers) => {
     if (!record) { // if ClearbitEnrichment record doesn't exist, fetch it from API
         await clearbit.Enrichment.find({ email: email })
         .then(res => {
-            const newRecord = _createClearbitEnrichment(email, res);
+            const newRecord = createClearbitEnrichment(email, res);
             helpers.logger.info('API ClearbitEnrichment: ' + res.person.email);
             return newRecord;
         })
@@ -39,7 +39,7 @@ module.exports = async (payload, helpers) => {
 
     // enrich Person record
     if (person) {
-        _upsertPerson(person, company ? company.id : null)
+        upsertPerson(person, company ? company.id : null)
         .then(res => { helpers.logger.info('Enriched Person: ' + email) });
     } else {
         helpers.logger.info('ClearbitEnrichment: Person ' + email + ' not found');
@@ -47,14 +47,14 @@ module.exports = async (payload, helpers) => {
 
     // enrich Company record
     if (company) {
-        _upsertCompany(company)
+        upsertCompany(company)
         .then(res => { helpers.logger.info('Enriched Company for: ' + email) });
     } else {
         helpers.logger.info('ClearbitEnrichment: Company for ' + email + ' not found');
     };
 };
 
-const _createClearbitEnrichment = async (email, data) => {
+const createClearbitEnrichment = async (email, data) => {
     const person = data.person;
     const company = data.company;
 
@@ -82,7 +82,7 @@ const _createClearbitEnrichment = async (email, data) => {
     })
 };
 
-const _upsertPerson = async (person, companyId) => {
+const upsertPerson = async (person, companyId) => {
     const data = {
         "clearbitId": person.id,
         "email": person.email,
@@ -144,7 +144,7 @@ const _upsertPerson = async (person, companyId) => {
     });
 };
 
-const _upsertCompany = async (company) => {
+const upsertCompany = async (company) => {
     const data = {
         "clearbitId": company.id,
         "domain": company.domain,
