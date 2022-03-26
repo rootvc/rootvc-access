@@ -65,7 +65,6 @@ const _createClearbitEnrichment = async (email, data) => {
 
     if (person) {
         record.personId = person.id;
-        record.personNameFullName = person.name.fullName;
         record.personNameGivenName = person.name.givenName;
         record.personNameFamilyName = person.name.familyName;
         record.personIndexedAt = person.indexedAt;

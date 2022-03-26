@@ -5,6 +5,28 @@ const Prisma = require('@prisma/client');
 const prisma = new Prisma.PrismaClient();
 const { quickAddJob } = require("graphile-worker");
 
+const BLOCKLIST = [
+  /notifications.*@/,
+  /subscribe.*@/,
+  /unsubscribe.*@/,
+  /.*no-?reply.*@/,
+  /info@.*/,
+  /events@.*/,
+  /team@.*/,
+  /founders@.*/,
+  /mailer-deamon@.*/,
+  /promo@.*/,
+  /do-?not-?reply@.*/,
+  /newsletter.*@/,
+  /investors.*@/,
+  /support.*@/,
+  /comments.*@/,
+  /@.*unsubscribe.*/,
+  /orders@.*/,
+  /contact@.*/,
+  /accounts?@.*/,
+];
+
 router.post('/emails', async (req, res) => {
   const body = req.body;
   const owner = body.owner;
@@ -24,23 +46,28 @@ router.post('/emails', async (req, res) => {
 
   const participants = [].concat(data.from, data.to, data.cc || [], data.replyTo || []);
 
-  participants.filter(p => p != owner).forEach(async (contact) => {
-    _upsertConnection(data, owner, contact);
-    _upsertPerson(contact);
-    _enqueueEnrichmentJob(contact);
+  participants
+  .filter(p => p != owner)
+  .filter(p => !BLOCKLIST.some(re => re.test(p))) // email address doesn't come from a blocklist (e.g. no-reply@domain.com)
+  .forEach(async (contact) => {
+    upsertConnection(data, owner, contact);
+    upsertPerson(contact);
+    enqueueEnrichmentJob(contact);
   });
-  _upsertMessage(data);
+  upsertMessage(data);
 
   res.status(200).json({ message: `Processed new email: ${data.messageId}` });
 });
 
-const _getMessage = async (messageId) => { // Get message by messageId
+// Get message by messageId
+const getMessage = async (messageId) => {
   return await prisma.Message.findUnique({
     where: { messageId: messageId }
   });
 };
 
-const _upsertMessage = async (data) => { // Create message, only if new messageId
+// Create message, only if new messageId
+const upsertMessage = async (data) => {
   return await prisma.Message.upsert({
     where: { messageId: data.messageId },
     update: {},
@@ -49,9 +76,10 @@ const _upsertMessage = async (data) => { // Create message, only if new messageI
   .then(res => { console.log('Message: ', res.messageId) });
 };
 
-const _upsertConnection = async (data, owner, contact) => { // Create connection pair if doesn't exist, otherwise increment appropriate count
+// Create connection pair if doesn't exist, otherwise increment appropriate count
+const upsertConnection = async (data, owner, contact) => {
   const isFromOwner = data.from === owner;
-  const isExistingMessage = await _getMessage(data.messageId) !== null;
+  const isExistingMessage = await getMessage(data.messageId) !== null;
   
   var updateData = { toAndFromOwner: { increment: 1 } };
   updateData[isFromOwner ? 'fromOwner' : 'toOwner'] = { increment: 1 };
@@ -72,7 +100,8 @@ const _upsertConnection = async (data, owner, contact) => { // Create connection
   .then(res => { console.log('Connection: ', res.owner, '|', res.contact) });
 }
 
-const _upsertPerson = async (p) => { // Create person, only if new email
+// Create person, only if new email
+const upsertPerson = async (p) => {
   return await prisma.Person.upsert({
     where: { email: p },
     update: {},
@@ -81,7 +110,8 @@ const _upsertPerson = async (p) => { // Create person, only if new email
   .then(res => { console.log('Person: ', res.email) });
 };
 
-const _enqueueEnrichmentJob = async (email) => { // Enqueue enrichment job for async processing
+// Enqueue enrichment job for async processing
+const enqueueEnrichmentJob = async (email) => {
   return await quickAddJob(
     { connectionString: process.env['DATABASE_URL'] },
     'clearbitEnrichment',

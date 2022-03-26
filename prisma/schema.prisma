@@ -169,18 +169,19 @@ model Company {
 }
 
 model ClearbitEnrichment {
-  id                 Int       @id @default(autoincrement())
-  email              String
-  raw                Json?
-  personId           String?
-  personNameFullName String?
-  personIndexedAt    DateTime?
-  companyId          String?
-  companyDomain      String?
-  companyName        String?
-  companyIndexedAt   DateTime?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  id                   Int       @id @default(autoincrement())
+  email                String
+  raw                  Json?
+  personId             String?
+  personNameGivenName  String?
+  personNameFamilyName String?
+  personIndexedAt      DateTime?
+  companyId            String?
+  companyDomain        String?
+  companyName          String?
+  companyIndexedAt     DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   @@unique(email)
 }
