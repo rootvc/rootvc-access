@@ -6,6 +6,8 @@ const bodyParser = require('body-parser')
 const indexRouter = require('./routes/index');
 const emailsRouter = require('./routes/emails');
 const { run } = require('graphile-worker');
+const Prisma = require('@prisma/client');
+const prisma = new Prisma.PrismaClient();
 
 var app = express();
 app.use(bodyParser.json());
