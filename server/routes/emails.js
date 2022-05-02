@@ -35,8 +35,8 @@ router.post('/emails', async (req, res) => {
   // Collect data from webhook
   const data = {
     "from": body.from,
-    "to": body.to,
-    "cc": body.cc,
+    "to": body.to.split(','),
+    "cc": body.cc ? body.cc.split(',') : [],
     "replyTo": body.replyTo,
     "labels": body.labels,
     "date": new Date(body.date),
@@ -45,10 +45,10 @@ router.post('/emails', async (req, res) => {
     "messageId": body.messageId,
   };
 
-  const participants = [].concat(data.from, data.to, data.cc || [], data.replyTo || []);
+  const participants = [].concat(data.from, data.to, data.cc, data.replyTo);
 
   participants
-  .filter(p => p != owner)
+  .filter(p => p && p != owner)
   .filter(p => !BLOCKLIST.some(re => re.test(p))) // email address doesn't come from a blocklist (e.g. no-reply@domain.com)
   .forEach(async (contact) => {
     upsertConnection(data, owner, contact);
