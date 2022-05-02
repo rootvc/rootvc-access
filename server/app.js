@@ -37,6 +37,8 @@ async function main() {
 
 main()
   .catch((err) => {
+    winston.error(err);
+    res.status(500).send(err);
     throw err;
   })
   .finally(async () => {

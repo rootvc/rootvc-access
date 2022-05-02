@@ -24,8 +24,13 @@ Express server endpoints, currently only used to interface with Zapier
 
 ## Setup
 
+Migrate the database
+`npx prisma migrate dev` for development, or `npx prisma migrate deploy` for production
+
+Install dependencies
 `npm install`
 
+Start the server
 `npm start`
 
 ## Future Features
