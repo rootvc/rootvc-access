@@ -27,6 +27,7 @@ const BLOCKLIST = [
   /contact@.*/,
   /accounts?@.*/,
   /reminders?@.*/,
+  /reply.*@/,
 ];
 
 router.post('/emails', async (req, res) => {
@@ -39,26 +40,31 @@ router.post('/emails', async (req, res) => {
     "to": body.to.toLowerCase().split(','),
     "cc": body.cc ? body.cc.toLowerCase().split(',') : [],
     "replyTo": body.replyTo ? body.replyTo.toLowerCase() : null,
-    "labels": body.labels,
+    "labels": body.labels ? body.labels.split(',') : [],
     "date": new Date(body.date),
     "threadId": body.threadId,
     "historyId": body.historyId,
     "messageId": body.messageId,
   };
 
-  const participants = [].concat(data.from, data.to, data.cc, data.replyTo);
+  // email address doesn't come from PROMOTIONS tab
+  if (data.labels.indexOf('CATEGORY_PROMOTIONS') == -1) {
+    const participants = [].concat(data.from, data.to, data.cc, data.replyTo);
 
-  participants
-  .filter(p => p && p != owner)
-  .filter(p => !BLOCKLIST.some(re => re.test(p))) // email address doesn't come from a blocklist (e.g. no-reply@domain.com)
-  .forEach(async (contact) => {
-    upsertConnection(data, owner, contact);
-    upsertPerson(contact);
-    enqueueEnrichmentJob(contact);
-  });
-  upsertMessage(data);
+    participants
+    .filter(p => p && p != owner)
+    .filter(p => !BLOCKLIST.some(re => re.test(p))) // email address doesn't come from a blocklist (e.g. no-reply@domain.com)
+    .forEach(async (contact) => {
+      upsertConnection(data, owner, contact);
+      upsertPerson(contact);
+      enqueueEnrichmentJob(contact);
+    });
+    upsertMessage(data);
 
-  res.status(200).json({ message: `Processed new email: ${data.messageId}` });
+    res.status(200).json({ message: `Processed new email: ${data.messageId}` });
+  } else {
+    res.status(200).json({ message: `Skipping email: ${data.messageId}` });
+  }
 });
 
 // Get message by messageId
