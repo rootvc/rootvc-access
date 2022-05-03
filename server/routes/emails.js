@@ -26,6 +26,7 @@ const BLOCKLIST = [
   /orders@.*/,
   /contact@.*/,
   /accounts?@.*/,
+  /reminders?@.*/,
 ];
 
 router.post('/emails', async (req, res) => {
@@ -34,10 +35,10 @@ router.post('/emails', async (req, res) => {
 
   // Collect data from webhook
   const data = {
-    "from": body.from,
-    "to": body.to.split(','),
-    "cc": body.cc ? body.cc.split(',') : [],
-    "replyTo": body.replyTo,
+    "from": body.from.toLowerCase(),
+    "to": body.to.toLowerCase().split(','),
+    "cc": body.cc ? body.cc.toLowerCase().split(',') : [],
+    "replyTo": body.replyTo ? body.replyTo.toLowerCase() : null,
     "labels": body.labels,
     "date": new Date(body.date),
     "threadId": body.threadId,
