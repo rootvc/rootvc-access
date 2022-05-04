@@ -1,6 +1,5 @@
 require('dotenv').config();
 const Prisma = require('@prisma/client');
-const e = require('express');
 const prisma = new Prisma.PrismaClient();
 var clearbit = require('clearbit')(process.env['CLEARBIT_API_KEY']);
 
