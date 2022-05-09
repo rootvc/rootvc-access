@@ -38,4 +38,3 @@ Start the server
 - Infrastructure configuration with IaSQL
 - Potentially move email->job Zapier to a job using Google's Gmail APIs
 - web frontend for searching the db
-
