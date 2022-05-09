@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
 const bodyParser = require('body-parser')
 const indexRouter = require('./routes/index');
 const emailsRouter = require('./routes/emails');
@@ -15,7 +14,6 @@ app.use(bodyParser.urlencoded());
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(cookieParser());
-app.use(logger('dev'));
 
 app.use('/', indexRouter);
 app.use('/webhooks/', emailsRouter);

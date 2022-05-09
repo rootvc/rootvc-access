@@ -31,6 +31,7 @@ const BLOCKLIST = [
 
 module.exports = async (payload, helpers) => {
     const { owner, data } = payload;
+    helpers.logger.info('Running record emails job');
     helpers.logger.info(`Recording Email: ${data.messageId}`);
     const participants = [].concat(data.from, data.to, data.cc, data.replyTo);
     
