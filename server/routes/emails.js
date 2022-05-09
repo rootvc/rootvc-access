@@ -16,7 +16,7 @@ router.post('/emails', async (req, res) => {
     "to": body.to.toLowerCase().split(','),
     "cc": body.cc ? body.cc.toLowerCase().split(',') : [],
     "replyTo": body.replyTo ? body.replyTo.toLowerCase() : null,
-    "labels": body.labels ? body.labels.split(',') : [],
+    "labels": body.labels,
     "date": new Date(body.date),
     "threadId": body.threadId,
     "historyId": body.historyId,
