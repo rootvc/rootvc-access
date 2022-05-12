@@ -13,10 +13,10 @@ module.exports = async (payload, helpers) => {
     try {
       const res = await clearbit.Enrichment.find({ email: email });
       record = createClearbitEnrichment(email, res);
-      helpers.logger.info('API ClearbitEnrichment: ' + res.person.email);
+      helpers.logger.info(`API ClearbitEnrichment: ${email}`);
     } catch (error) {
       if (error instanceof clearbit.Enrichment.NotFoundError) {
-        helpers.logger.error('NOT FOUND: API ClearbitEnrichment could not find Enrichment for: ' + email, error);
+        helpers.logger.error(`NOT FOUND: API ClearbitEnrichment could not find Enrichment for: ${email}`, error);
         await prisma.ClearbitEnrichment.create({
           data: { email: email }
         });
@@ -26,7 +26,7 @@ module.exports = async (payload, helpers) => {
     }
   }
   else {
-    helpers.logger.info('CACHE HIT: ClearbitEnrichment: ' + email);
+    helpers.logger.info(`CACHE HIT: ClearbitEnrichment: ${email}`);
   }
 
   // If record was found in either cache (db) or API
@@ -37,17 +37,17 @@ module.exports = async (payload, helpers) => {
     // enrich Person record
     if (person) {
       await upsertPerson(person, company ? company.id : null);
-      helpers.logger.info('Enriched Person: ' + email);
+      helpers.logger.info(`Enriched Person: ${email}`);
     } else {
-      helpers.logger.error('ClearbitEnrichment: Person ' + email + ' not found');
+      helpers.logger.error(`ClearbitEnrichment: Person ${email} not found`);
     };
 
     // enrich Company record
     if (company) {
       await upsertCompany(company);
-      helpers.logger.info('Enriched Company for: ' + email);
+      helpers.logger.info(`Enriched Company for: ${email}`);
     } else {
-      helpers.logger.error('ClearbitEnrichment: Company for ' + email + ' not found');
+      helpers.logger.error(`ClearbitEnrichment: Company for ${email} not found`);
     };
   }
 };
@@ -75,7 +75,7 @@ const createClearbitEnrichment = async (email, data) => {
     record.companyIndexedAt = company.indexedAt;
   }
 
-  await prisma.ClearbitEnrichment.create({
+  return await prisma.ClearbitEnrichment.create({
     data: record
   })
 };
