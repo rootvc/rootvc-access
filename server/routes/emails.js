@@ -1,8 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const router = express.Router();
-const Prisma = require('@prisma/client');
-const prisma = new Prisma.PrismaClient();
 const { quickAddJob } = require("graphile-worker");
 
 // Process email entirely asynchrnously to allow large parallelization

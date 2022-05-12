@@ -35,7 +35,7 @@ async function main() {
 
 main()
   .catch((err) => {
-    throw err;
+    console.error('This should never happen', err);
   })
   .finally(async () => {
     await prisma.$disconnect();
