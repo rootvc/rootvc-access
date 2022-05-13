@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser')
 const indexRouter = require('./routes/index');
 const emailsRouter = require('./routes/emails');
 const { run } = require('graphile-worker');
@@ -9,10 +8,8 @@ const Prisma = require('@prisma/client');
 const prisma = new Prisma.PrismaClient();
 
 var app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
