@@ -11,7 +11,7 @@ module.exports = async (payload, helpers) => {
 
   if (!record) { // if ClearbitEnrichment record doesn't exist, fetch it from API
     try {
-      const res = await clearbit.Enrichment.find({ email: email });
+      const res = await clearbit.Enrichment.find({ email: email, stream: true });
       record = createClearbitEnrichment(email, res);
       helpers.logger.info(`API ClearbitEnrichment: ${email}`);
     } catch (error) {
@@ -75,9 +75,13 @@ const createClearbitEnrichment = async (email, data) => {
     record.companyIndexedAt = company.indexedAt;
   }
 
-  return await prisma.ClearbitEnrichment.create({
-    data: record
-  })
+  try {
+    return await prisma.ClearbitEnrichment.create({
+      data: record
+    });
+  } catch (error) {
+    helpers.logger.error(`Error creating ClearbitEnrichment for: ${person}`, error);
+  }
 };
 
 const upsertPerson = async (person, companyId) => {
@@ -135,11 +139,15 @@ const upsertPerson = async (person, companyId) => {
     "indexedAt": person.indexedAt,
   };
 
-  await prisma.Person.upsert({
-    where: { email: person.email },
-    update: data,
-    create: data,
-  });
+  try {
+    await prisma.Person.upsert({
+      where: { email: person.email },
+      update: data,
+      create: data,
+    });
+  } catch (error) {
+    helpers.logger.error(`Error upserting Person for: ${person.email}`, error);
+  }
 };
 
 const upsertCompany = async (company) => {
@@ -205,9 +213,13 @@ const upsertCompany = async (company) => {
     "indexedAt": company.indexedAt,
   };
 
-  await prisma.Company.upsert({
-    where: { domain: company.domain },
-    update: data,
-    create: data,
-  });
+  try {
+    await prisma.Company.upsert({
+      where: { domain: company.domain },
+      update: data,
+      create: data,
+    });
+  } catch (error) {
+    helpers.logger.error(`Error upserting Company for: ${company.domain}`, error);
+  }
 };
