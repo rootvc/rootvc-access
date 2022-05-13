@@ -12,7 +12,7 @@ module.exports = async (payload, helpers) => {
   if (!record) { // if ClearbitEnrichment record doesn't exist, fetch it from API
     try {
       const res = await clearbit.Enrichment.find({ email: email, stream: true });
-      record = createClearbitEnrichment(email, res);
+      record = createClearbitEnrichment(email, res, helpers);
       helpers.logger.info(`API ClearbitEnrichment: ${email}`);
     } catch (error) {
       if (error instanceof clearbit.Enrichment.NotFoundError) {
@@ -36,7 +36,7 @@ module.exports = async (payload, helpers) => {
 
     // enrich Person record
     if (person) {
-      await upsertPerson(person, company ? company.id : null);
+      await upsertPerson(person, company ? company.id : null, helpers);
       helpers.logger.info(`Enriched Person: ${email}`);
     } else {
       helpers.logger.error(`ClearbitEnrichment: Person ${email} not found`);
@@ -44,7 +44,7 @@ module.exports = async (payload, helpers) => {
 
     // enrich Company record
     if (company) {
-      await upsertCompany(company);
+      await upsertCompany(company, helpers);
       helpers.logger.info(`Enriched Company for: ${email}`);
     } else {
       helpers.logger.error(`ClearbitEnrichment: Company for ${email} not found`);
@@ -52,7 +52,7 @@ module.exports = async (payload, helpers) => {
   }
 };
 
-const createClearbitEnrichment = async (email, data) => {
+const createClearbitEnrichment = async (email, data, helpers) => {
   const person = data.person;
   const company = data.company;
 
@@ -84,7 +84,7 @@ const createClearbitEnrichment = async (email, data) => {
   }
 };
 
-const upsertPerson = async (person, companyId) => {
+const upsertPerson = async (person, companyId, helpers) => {
   const data = {
     "clearbitId": person.id,
     "email": person.email,
@@ -150,7 +150,7 @@ const upsertPerson = async (person, companyId) => {
   }
 };
 
-const upsertCompany = async (company) => {
+const upsertCompany = async (company, helpers) => {
   const data = {
     "clearbitId": company.id,
     "domain": company.domain,
