@@ -80,7 +80,7 @@ const createClearbitEnrichment = async (email, data, helpers) => {
       data: record
     });
   } catch (error) {
-    helpers.logger.error(`Error creating ClearbitEnrichment for: ${person}`, error);
+    helpers.logger.error(`Error creating ClearbitEnrichment for: ${email}`, error);
   }
 };
 

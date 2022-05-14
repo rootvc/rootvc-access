@@ -35,6 +35,11 @@ module.exports = async (payload, helpers) => {
   helpers.logger.info(`Recording Email: ${data.messageId}`);
   const participants = [].concat(data.from, data.to, data.cc, data.replyTo);
 
+  // Why??
+  if (data.to == null) {
+    helpers.logger.error(`To field is null in ${data.messageId}. Debug: ${JSON.stringify(data)}`);
+  }
+
   participants
     .filter(p => p && p != owner)
     .filter(p => !BLOCKLIST.some(re => re.test(p))) // email address doesn't come from a blocklist (e.g. no-reply@domain.com)

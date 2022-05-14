@@ -11,8 +11,8 @@ router.post('/emails', async (req, res) => {
   // Collect data from webhook
   const data = {
     "from": body.from.toLowerCase(),
-    "to": body.to.toLowerCase().split(','),
-    "cc": body.cc ? body.cc.toLowerCase().split(',') : [],
+    "to": body.to ? body.to.toLowerCase().split(",") : null,
+    "cc": body.cc ? body.cc.toLowerCase().split(",") : [],
     "replyTo": body.replyTo ? body.replyTo.toLowerCase() : null,
     "labels": body.labels,
     "date": new Date(body.date),
