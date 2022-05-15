@@ -7,10 +7,10 @@
     "private": true,
     "scripts": {
         "build": "cd client && react-scripts build",
-        "start": "npm-run-all --parallel server client supertokens-api",
-        "server": "node ./server/app.js",
+        "start": "npm-run-all --parallel api client supertokens-api",
+        "api": "node ./api/app.js",
         "client": "cd client && npm start",
-        "supertokens-api": "node ./supertokens/api.js"
+        "supertokens-api": "node ./supertokens/app.js"
     },
     "devDependencies": {
         "@types/express": "4.17.13",
