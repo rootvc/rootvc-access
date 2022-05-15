@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cookieParser = require('cookie-parser');
-const indexRouter = require('./routes/index');
+const heartbeatRouter = require('./routes/heartbeat');
 const emailsRouter = require('./routes/emails');
 const { run } = require('graphile-worker');
 const Prisma = require('@prisma/client');
@@ -12,8 +13,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use('/', indexRouter);
+app.use('/heartbeat/', heartbeatRouter);
 app.use('/webhooks/', emailsRouter);
+
+// Handle React routing, return all requests to React app
+app.use(express.static(path.join(__dirname, 'client/build')));
+app.get('*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../client/build', req.path));
+});
+
 app.listen(process.env.PORT || 3000);
 
 async function main() {
