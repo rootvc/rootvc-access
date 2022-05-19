@@ -122,5 +122,3 @@ main()
   });
 
 app.listen(apiPort, () => console.log(`API Server listening on port ${apiPort}`));
-
-// module.exports = app;
