@@ -1,27 +1,53 @@
+@import url('https://fonts.googleapis.com/css?family=Abel|Source+Code+Pro&display=swap');
+
+:root {
+    --brand-bg-color: #2c2c2c;
+    --brand-txt-color: #ffffff;
+    --brand-link-color: #ffffff;
+    --brand-safety-color: #ff6700;
+    --brand-black-color: #000000;
+}
+ 
+body {
+    background-color: var(--brand-black-color);
+    font-family: "Abel";
+}
+
 .App {
-    display: flex;
-    flex-direction: column;
-    width: 100vw;
-    height: 100vh;
-    font-family: Rubik;
+    margin: 100px;
 }
 
-.fill {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex: 1;
+.header {
+    width: 100%;
+    color: var(--brand-txt-color);
 }
 
-.sessionButton {
-    padding-left: 13px;
-    padding-right: 13px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    background-color: black;
-    border-radius: 10px;
+a {
+    color: var(--brand-link-color);
+}
+
+.footer {
+    background-color: var(--brand-bg-color);
+}
+
+.button {
+    height: 70px;
+    alignItems: center;
+    paddingLeft: 75px;
+    paddingRight: 75px;
+    display: flex;
+    justifyContent: flex-end;
+}
+
+.button-inner {
+    display: flex;
+    width: 116px;
+    height: 42px;
+    backgroundColor: #000000;
+    borderRadius: 10px;
     cursor: pointer;
-    color: white;
-    font-weight: bold;
-    font-size: 17px;
+    alignItems: center;
+    justifyContent: center;
+    color: #ffffff;
+    fontWeight: bold;
 }

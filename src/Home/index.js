@@ -1,6 +1,8 @@
 import React from "react";
 import Logout from "./Logout";
 import SuccessView from "./SuccessView";
+import ImportHistory from "./ImportHistory";
+
 import { useSessionContext } from "supertokens-auth-react/recipe/session";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "supertokens-auth-react/recipe/thirdparty";

@@ -1,11 +1,25 @@
+@import url('https://fonts.googleapis.com/css?family=Abel|Source+Code+Pro&display=swap');
+
 body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-        "Droid Sans", "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  color: var(--brand-txt-color);
+  font-family: "Abel";
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+:root {
+    --brand-bg-color: #2c2c2c;
+    --brand-txt-color: #ffffff;
+    --brand-link-color: #ffffff;
+ }
+
+.header {
+  width: 100%;
+  color: var(--brand-txt-color);
+}
+
+a {
+  color: var(--brand-link-color);
+}
+
+.footer {
+  background-color: var(--brand-bg-color);
 }
