@@ -1,7 +1,6 @@
 require('dotenv').config();
-const Prisma = require('@prisma/client');
-const prisma = new Prisma.PrismaClient();
-let clearbit = require('clearbit')(process.env['CLEARBIT_API_KEY']);
+const prisma = require('../services/prisma');
+const clearbit = require('clearbit')(process.env['CLEARBIT_API_KEY']);
 
 module.exports = async (payload, helpers) => {
   const { email } = payload;
@@ -16,12 +15,14 @@ module.exports = async (payload, helpers) => {
       helpers.logger.info(`API ClearbitEnrichment: ${email}`);
     } catch (error) {
       if (error instanceof clearbit.Enrichment.NotFoundError) {
-        helpers.logger.error(`NOT FOUND: API ClearbitEnrichment could not find Enrichment for: ${email}`, error);
+        helpers.logger.error(`NOT FOUND: API ClearbitEnrichment could not find Enrichment for: ${email}`)
+        helpers.logger.error(error);
         await prisma.ClearbitEnrichment.create({
           data: { email: email }
         });
       } else {
-        helpers.logger.error(`API ClearbitEnrichment error for ${email}`, error);
+        helpers.logger.error(`API ClearbitEnrichment error for ${email}`);
+        helpers.logger.error(error);
       }
     }
   }
@@ -35,7 +36,7 @@ module.exports = async (payload, helpers) => {
     company = record.raw ? record.raw.company : null;
 
     // enrich Person record
-    if (person) {
+    if (person) { // TODO and not previously enriched
       await upsertPerson(person, company ? company.id : null, helpers);
       helpers.logger.info(`Enriched Person: ${email}`);
     } else {
@@ -43,7 +44,7 @@ module.exports = async (payload, helpers) => {
     };
 
     // enrich Company record
-    if (company) {
+    if (company) { // TODO and not previously enriched
       await upsertCompany(company, helpers);
       helpers.logger.info(`Enriched Company for: ${email}`);
     } else {
@@ -80,7 +81,8 @@ const createClearbitEnrichment = async (email, data, helpers) => {
       data: record
     });
   } catch (error) {
-    helpers.logger.error(`Error creating ClearbitEnrichment for: ${email}`, error);
+    helpers.logger.error(`Error creating ClearbitEnrichment for: ${email}`);
+    helpers.logger.error(error);
   }
 };
 
@@ -146,7 +148,8 @@ const upsertPerson = async (person, companyId, helpers) => {
       create: data,
     });
   } catch (error) {
-    helpers.logger.error(`Error upserting Person for: ${person.email}`, error);
+    helpers.logger.error(`Error upserting Person for: ${person.email}`);
+    helpers.logger.error(error);
   }
 };
 
@@ -220,6 +223,7 @@ const upsertCompany = async (company, helpers) => {
       create: data,
     });
   } catch (error) {
-    helpers.logger.error(`Error upserting Company for: ${company.domain}`, error);
+    helpers.logger.error(`Error upserting Company for: ${company.domain}`);
+    helpers.logger.error(error);
   }
 };

@@ -5,6 +5,7 @@ import ThirdParty, { ThirdPartyAuth, Google } from "supertokens-auth-react/recip
 import Session from "supertokens-auth-react/recipe/session";
 import { Routes, BrowserRouter as Router, Route } from "react-router-dom";
 
+
 import Home from "./Home";
 import SessionExpiredPopup from "./SessionExpiredPopup";
 
@@ -32,16 +33,16 @@ SuperTokens.init({
         providers: [Google.init()],
         style: {
           container: {
-            "background-image": "url(/rootvc-logo.png)",
-            "background-size": "100px",
-            "background-repeat": "no-repeat",
-            "background-position-y": "20px",
-            "background-position-x": "center",
-            "padding-top": "100px"
+            "backgroundImage": "url(/rootvc-logo.png)",
+            "backgroundSize": "100px",
+            "backgroundRepeat": "no-repeat",
+            "backgroundPositionY": "20px",
+            "backgroundPositionX": "center",
+            "paddingTop": "100px"
           },
           providerGoogle: {
-            "background-color": "#ff6700",
-            "border-color": "black",
+            "backgroundColor": "#ff6700",
+            "borderColor": "black",
           }
         }
       },

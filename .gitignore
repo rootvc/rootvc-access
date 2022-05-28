@@ -106,4 +106,4 @@ dist
 README-private.md
 Dockerfile
 
-.build/
+build/

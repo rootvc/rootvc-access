@@ -12,6 +12,7 @@ datasource db {
 
 model Message {
   id        Int      @id @default(autoincrement())
+  owner     String   @default("lee@root.vc")
   from      String
   to        String[]
   cc        String[]
@@ -184,4 +185,18 @@ model ClearbitEnrichment {
   updatedAt            DateTime  @updatedAt
 
   @@unique(email)
+}
+
+model User {
+    id                  Int       @id @default(autoincrement())
+    email               String
+    domain              String
+    givenName           String?
+    familyName          String?
+    googleAccessToken   String?
+    isOwner             Boolean   @default(false)
+    createdAt           DateTime  @default(now())
+    updatedAt           DateTime  @updatedAt
+    
+    @@unique(email)
 }

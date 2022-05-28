@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import Logout from "./Logout";
 import SuccessView from "./SuccessView";
 import ImportHistory from "./ImportHistory";
@@ -16,9 +17,17 @@ export default function Home() {
     navigate("/auth");
   }
 
+  async function importHistoryClicked(email) {
+    email = "lee@root.vc";  // TODO: do not hardcode lol
+    const response = await axios.post('/history', {
+      email: email
+    });
+  }
+
   return (
     <div className="fill">
       <Logout logoutClicked={logoutClicked} />
+      <ImportHistory importHistoryClicked={importHistoryClicked} />
       <SuccessView userId={userId} />
     </div>
   );

@@ -1,10 +1,10 @@
 require('dotenv').config();
-const Prisma = require('@prisma/client');
-const prisma = new Prisma.PrismaClient();
-let clearbit = require('clearbit')(process.env['CLEARBIT_API_KEY']);
-const { quickAddJob } = require("graphile-worker");
+const prisma = require('../services/prisma');
+const workerUtils = require('../services/graphileWorker');
 
-// Extract to some constant
+// TODO: Enqueue child jobs selectively
+
+// TODO: Extract to some constant
 const BLOCKLIST = [
   /notifications.*@/,
   /subscribe.*@/,
@@ -27,26 +27,28 @@ const BLOCKLIST = [
   /accounts?@.*/,
   /reminders?@.*/,
   /reply.*@/,
+  /billing.*@/,
 ];
 
-module.exports = async (payload, helpers) => {
-  const { owner, data } = payload;
-  helpers.logger.info('Running record emails job');
+module.exports = async (data, helpers) => {
   helpers.logger.info(`Recording Email: ${data.messageId}`);
   const participants = [].concat(data.from, data.to, data.cc, data.replyTo);
 
-  // Why??
+  // Why does this ever happen? I don't know, but this fixes it
   if (data.to == null) {
-    helpers.logger.error(`To field is null in ${data.messageId}. Debug: ${JSON.stringify(data)}`);
+    helpers.logger.error(`The 'To' field is null in ${data.messageId}. Debug: ${JSON.stringify(data)}`);
   }
 
+  // temp fix
+  data.cc = data.cc ? data.cc : [];
+
   participants
-    .filter(p => p && p != owner)
+    .filter(p => p && p != data.owner)
     .filter(p => !BLOCKLIST.some(re => re.test(p))) // email address doesn't come from a blocklist (e.g. no-reply@domain.com)
     .forEach(async (contact) => {
-      upsertConnection(data, owner, contact, helpers);
+      upsertConnection(data, contact, helpers);
       upsertPerson(contact, helpers);
-      enqueueEnrichmentJob(contact, helpers); // async job
+      enqueueEnrichmentJob(contact, helpers);
     });
   upsertMessage(data, helpers);
 };
@@ -68,35 +70,40 @@ const upsertMessage = async (data, helpers) => {
     });
     helpers.logger.info(`Recorded Message: ${data.messageId}`);
   } catch (error) {
-    helpers.logger.error(`Error upserting Message: ${data.messageId}`, error);
+    helpers.logger.error(`Error upserting Message: ${data.messageId}`);
+    helpers.logger.error(error);
   }
 };
 
 // Create connection pair if doesn't exist, otherwise increment appropriate count
-const upsertConnection = async (data, owner, contact, helpers) => {
-  const isFromOwner = data.from === owner;
+const upsertConnection = async (data, contact, helpers) => {
+  const isFromOwner = data.from === data.owner;
   const isExistingMessage = await getMessage(data.messageId) !== null;
 
   let updateData = { toAndFromOwner: { increment: 1 } };
   updateData[isFromOwner ? 'fromOwner' : 'toOwner'] = { increment: 1 };
 
   try {
-    prisma.Connection.upsert({
+    await prisma.Connection.upsert({
       where: {
-        owner_contact: { owner: owner, contact: contact },
+        owner_contact: {
+          owner: data.owner,
+          contact: contact
+        },
       },
       update: isExistingMessage ? {} : updateData,
       create: {
-        owner: owner,
+        owner: data.owner,
         contact: contact,
         toOwner: isFromOwner ? 0 : 1,
         fromOwner: isFromOwner ? 1 : 0,
         toAndFromOwner: 1,
       },
     });
-    helpers.logger.info(`Recorded Connection: ${owner} | ${contact}`);
+    helpers.logger.info(`Recorded Connection: ${data.owner} | ${contact}`);
   } catch (error) {
-    helpers.logger.error(`Error upserting Connection: ${owner} | ${contact}`, error);
+    helpers.logger.error(`Error upserting Connection: ${data.owner} | ${contact}`);
+    helpers.logger.error(error);
   }
 }
 
@@ -110,15 +117,17 @@ const upsertPerson = async (p, helpers) => {
     });
     helpers.logger.info(`Recorded Person: ${p}`);
   } catch (error) {
-    helpers.logger.error(`Error upserting Person: ${p}`, error);
+    helpers.logger.error(`Error upserting Person: ${p}`);
+    helpers.logger.error(error);
   }
 };
 
 // Enqueue enrichment job for async processing
 const enqueueEnrichmentJob = async (email) => {
-  return await quickAddJob(
-    { connectionString: process.env['DATABASE_URL'] },
+  const utils = await workerUtils;
+  return await utils.addJob(
     'clearbitEnrichment',
     { email: email },
+    { queueName: 'main' }
   );
 };
