@@ -135,7 +135,7 @@ app.get("/sessioninfo", verifySession(), async (req, res) => {
 });
 
 // Serve React app
-app.use(express.static(path.join(__dirname, './dist')));
+app.use(express.static(path.join(__dirname, './build')));
 
 app.use(errorHandler());
 
