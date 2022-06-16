@@ -1,4 +1,4 @@
-require("../server/index");
+require("../../server/index");
 
 // see the server/index endpoint to see what happens on startup
 

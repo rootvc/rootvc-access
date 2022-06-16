@@ -1,7 +1,5 @@
-require('dotenv').config();
 const { run, makeWorkerUtils } = require('graphile-worker');
 const connectionString = process.env.DATABASE_URL;
-const fs = require('fs');
 
 class Worker {
   async init() {

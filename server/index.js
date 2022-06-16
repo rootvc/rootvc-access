@@ -1,4 +1,4 @@
-import worker from '../../services/graphileWorker'
+import worker from '../services/graphileWorker'
 
 // Hack to let NextJS run a background task (e.g. starting Graphile workers)
 // Once NextJS server is running, must hit this endpoint to run workers, etc.
