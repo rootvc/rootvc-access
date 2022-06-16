@@ -6,7 +6,7 @@ export const websiteDomain = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_
 
 export const appInfo = {
   appName: 'RootVC Access',
-  websiteDomain,
+  websiteDomain: websiteDomain,
   apiDomain: websiteDomain,
-  apiBasePath,
+  apiBasePath: apiBasePath,
 };

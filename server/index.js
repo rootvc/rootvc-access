@@ -13,6 +13,6 @@ async function main() {
 
 main()
   .catch((error) => {
-    console.error('[startup] An error occured. (This should never happen! Handle errors inside job definitions instead.)');
+    console.error('[startup] An error occurred. (This should never happen! Handle errors inside job definitions instead.)');
     console.error(error);
   });
