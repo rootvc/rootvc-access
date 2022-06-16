@@ -18,9 +18,8 @@ export default function Home() {
   }
 
   async function importHistoryClicked(email) {
-    email = "lee@root.vc";  // TODO: do not hardcode lol
     const response = await axios.post('/api/history', {
-      email: email
+      superTokensId: userId,
     });
   }
 

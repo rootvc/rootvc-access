@@ -6,15 +6,12 @@
     --brand-link-color: #ffffff;
     --brand-safety-color: #ff6700;
     --brand-black-color: #000000;
+    padding: 100px;
 }
  
 body {
     background-color: var(--brand-black-color);
     font-family: "Abel";
-}
-
-.App {
-    margin: 100px;
 }
 
 .header {

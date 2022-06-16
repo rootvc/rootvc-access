@@ -12,7 +12,7 @@ datasource db {
 
 model Message {
   id        Int      @id @default(autoincrement())
-  owner     String   @default("lee@root.vc")
+  owner     String
   from      String
   to        String[]
   cc        String[]
@@ -194,9 +194,11 @@ model User {
     givenName           String?
     familyName          String?
     googleAccessToken   String?
+    superTokensId       String
     isOwner             Boolean   @default(false)
     createdAt           DateTime  @default(now())
     updatedAt           DateTime  @updatedAt
     
     @@unique(email)
+    @@unique(superTokensId)
 }

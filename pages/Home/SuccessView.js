@@ -1,5 +1,3 @@
-import CallAPIView from "./CallAPIView";
-
 export default function SuccessView(props) {
   let userId = props.userId;
 
@@ -7,6 +5,7 @@ export default function SuccessView(props) {
     <div
       className="fill"
       style={{
+        color: "white",
         width: "100%",
         alignItems: "center",
         justifyContent: "center",

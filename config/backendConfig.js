@@ -3,6 +3,7 @@ import SessionNode from 'supertokens-node/recipe/session'
 import { appInfo } from './appInfo'
 import jwt from 'jsonwebtoken'
 const prisma = require('../services/prisma');
+const { google } = require('googleapis');
 
 export const backendConfig = () => {
   return {
@@ -42,8 +43,17 @@ export const backendConfig = () => {
                 if (response.status === "OK") {
                   const userData = jwt.decode(response.authCodeResponse.id_token);
                   const accessToken = response.authCodeResponse.access_token;
+                  const superTokensId = response.user.id;
 
-                  // TODO: grab name and maybe avatar from Google API?                              
+                  // TODO: grab name and maybe avatar from Google API?      
+
+                  // const oAuth2Client = new google.auth.OAuth2(
+                  //   process.env.GOOGLE_CLIENT_ID,
+                  //   process.env.GOOGLE_CLIENT_SECRET,
+                  //   "/auth/callbacks/google"
+                  // );
+                  // oAuth2Client.setCredentials({ access_token: accessToken });
+                  // const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
                   try {
                     await prisma.User.upsert({
@@ -55,12 +65,14 @@ export const backendConfig = () => {
                         email: userData.email,
                         domain: userData.hd,
                         googleAccessToken: accessToken,
+                        superTokensId: superTokensId,
                         isOwner: userData.hd == process.env.OWNER_GOOGLE_DOMAIN,
                       }
                     });
-                    console.log(`Logged in and created/updated User: ${userData.email}`);
+
+                    console.log(`[config/supertokens] Logged in and created/updated User ${superTokensId}: ${userData.email}`);
                   } catch (error) {
-                    console.log(`Error upserting User: ${userData.email}`)
+                    console.log(`[config/supertokens] Error upserting User: ${userData.email}`)
                     console.log(error);
                   }
                 };
