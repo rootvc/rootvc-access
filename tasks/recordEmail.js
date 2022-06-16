@@ -1,4 +1,3 @@
-require('dotenv').config();
 const prisma = require('../services/prisma');
 const workerUtils = require('../services/graphileWorker');
 

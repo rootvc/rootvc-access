@@ -1,11 +1,12 @@
-require('dotenv').config();
-const express = require('express');
-const router = express.Router();
-const workerUtils = require('../services/graphileWorker');
+const workerUtils = require('../../../services/graphileWorker');
+const SuperTokensNode = require('supertokens-node');
+const { backendConfig } = require('../../../config/backendConfig');
 
-// Process email entirely asynchrnously to allow large parallelization
-router.post('/', async (req, res) => {
+// Process email entirely asynchronously to allow large parallelization
+const handler = async (req, res) => {
   const body = req.body;
+
+  SuperTokensNode.init(backendConfig());
 
   // Collect data from webhook
   const data = {
@@ -24,11 +25,13 @@ router.post('/', async (req, res) => {
   // email address doesn't come from PROMOTIONS tab
   if (data.labels.indexOf('CATEGORY_PROMOTIONS') == -1) {
     enqueueRecordEmailJob(data);
+    res.statusCode = 200;
     res.status(200).json({ message: `Enqueued processing of new email for ${data.owner}: ${data.messageId}` });
   } else {
+    res.statusCode = 200;
     res.status(200).json({ message: `Skipping email for ${data.owner}: ${data.messageId}` });
   }
-});
+};
 
 // Enqueue record email job for async processing
 const enqueueRecordEmailJob = async (data) => {
@@ -40,4 +43,4 @@ const enqueueRecordEmailJob = async (data) => {
   );
 };
 
-module.exports = router;
+export default handler;

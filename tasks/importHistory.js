@@ -1,4 +1,3 @@
-require('dotenv').config();
 const { google } = require('googleapis');
 const prisma = require('../services/prisma');
 const workerUtils = require('../services/graphileWorker');
@@ -10,7 +9,6 @@ const workerUtils = require('../services/graphileWorker');
 // TOOD: LogDNA? Shore up log formatting
 // TODO: Raise errors when a job should be re-run
 // TODO: Catch errors correctly like Clearbit not found
-// TODO: extract Google and maybe Supertokens into services dir
 
 module.exports = async (payload, helpers) => {
   const pageSize = 10;
@@ -25,10 +23,9 @@ module.exports = async (payload, helpers) => {
   const oAuth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    "/"
+    "/auth/callbacks/google"
   );
   oAuth2Client.setCredentials({ access_token: accessToken });
-  // google.options({ auth: oauth2Client });
   const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
   let now = new Date(Date.now());
@@ -47,7 +44,7 @@ module.exports = async (payload, helpers) => {
           includeSpamTrash: false,
           maxResults: pageSize,
           pageToken: pageToken,
-          q: "trinchero -label:CATEGORY_PROMOTIONS", // filter for messages
+          q: "-label:CATEGORY_PROMOTIONS -label:CATEGORY_UPDATES", // filter out spam, newsletters etc.
           userId: "me"
         });
         lastGoogleCall = new Date(Date.now());

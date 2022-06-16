@@ -1,4 +1,3 @@
-require('dotenv').config();
 const prisma = require('../services/prisma');
 const clearbit = require('clearbit')(process.env['CLEARBIT_API_KEY']);
 

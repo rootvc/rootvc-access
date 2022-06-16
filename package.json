@@ -1,21 +1,24 @@
 {
     "name": "rootvc-access",
     "version": "0.0.0",
-    "description": "RootVC Access monorepo",
+    "description": "RootVC Access",
     "author": "Root Ventures",
     "license": "MIT",
     "private": true,
     "scripts": {
-        "build": "react-scripts build",
-        "start": "npm-run-all --parallel server client",
-        "dev": "npm-run-all --parallel server client",
-        "server": "node ./server.js",
-        "client": "react-scripts start",
-        "migrate": "npx prisma migrate"
+        "build": "next build",
+        "migrate": "npx prisma migrate",
+        "dev": "npm-run-all -p dev:startup dev:next",
+        "dev:next": "next dev",
+        "dev:startup": "while true; do ./script/startup.sh; sleep 1; done",
+        "start": "npm-run-all -p start:startup start:next",
+        "start:next": "next start",
+        "start:setup": "./script/startup.sh"
     },
     "devDependencies": {
         "@types/express": "4.17.13",
         "@types/node": "^17.0.21",
+        "npm-run-all": "^4.1.5",
         "prisma": "^3.13.0",
         "ts-node": "^10.7.0",
         "typescript": "^4.6.2"
@@ -34,17 +37,19 @@
         "graphile-worker": "^0.12.2",
         "helmet": "^5.0.2",
         "http-errors": "~1.6.3",
-        "http-proxy-middleware": "^2.0.6",
-        "http2": "^3.3.7",
         "jsonwebtoken": "^8.5.1",
         "morgan": "^1.10.0",
-        "npm-run-all": "^4.1.5",
+        "next": "^12.1.6",
+        "nextjs-cors": "^2.1.1",
         "react": "^18.1.0",
         "react-dom": "^18.1.0",
-        "react-router-dom": "^6.3.0",
-        "react-scripts": "4.0.3",
         "supertokens-auth-react": "^0.21.3",
-        "supertokens-node": "^9.2.0"
+        "supertokens-node": "^9.2.3"
+    },
+    "browser": {
+        "fs": false,
+        "path": false,
+        "os": false
     },
     "browserslist": {
         "production": [
@@ -57,6 +62,5 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
-    },
-    "proxy": "http://localhost:3001"
+    }
 }
