@@ -1,3 +1,4 @@
+const Sentry = require("@sentry/nextjs");
 const prisma = require('../services/prisma');
 const workerUtils = require('../services/graphileWorker');
 
@@ -69,6 +70,7 @@ const upsertMessage = async (data, helpers) => {
     });
     helpers.logger.info(`Recorded Message: ${data.messageId}`);
   } catch (error) {
+    Sentry.captureException(error);
     helpers.logger.error(`Error upserting Message: ${data.messageId}`);
     helpers.logger.error(error);
   }
@@ -101,6 +103,7 @@ const upsertConnection = async (data, contact, helpers) => {
     });
     helpers.logger.info(`Recorded Connection: ${data.owner} | ${contact}`);
   } catch (error) {
+    Sentry.captureException(error);
     helpers.logger.error(`Error upserting Connection: ${data.owner} | ${contact}`);
     helpers.logger.error(error);
   }
@@ -116,6 +119,7 @@ const upsertPerson = async (p, helpers) => {
     });
     helpers.logger.info(`Recorded Person: ${p}`);
   } catch (error) {
+    Sentry.captureException(error);
     helpers.logger.error(`Error upserting Person: ${p}`);
     helpers.logger.error(error);
   }

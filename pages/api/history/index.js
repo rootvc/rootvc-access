@@ -1,3 +1,4 @@
+import { withSentry } from '@sentry/nextjs';
 import { superTokensNextWrapper } from 'supertokens-node/nextjs'
 const { verifySession } = require("supertokens-node/recipe/session/framework/express");
 const SuperTokensNode = require('supertokens-node');
@@ -40,4 +41,4 @@ const enqueueImportHistoryJob = async (owner, pageToken) => {
   );
 };
 
-export default handler;
+export default withSentry(handler);

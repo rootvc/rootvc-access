@@ -1,6 +1,8 @@
-const workerUtils = require('../../../services/graphileWorker');
+const workerUtils = require('../../../../services/graphileWorker');
 const SuperTokensNode = require('supertokens-node');
-const { backendConfig } = require('../../../config/backendConfig');
+const { backendConfig } = require('../../../../config/backendConfig');
+import { withSentry } from '@sentry/nextjs';
+
 
 // Process email entirely asynchronously to allow large parallelization
 const handler = async (req, res) => {
@@ -43,4 +45,4 @@ const enqueueRecordEmailJob = async (data) => {
   );
 };
 
-export default handler;
+export default withSentry(handler);

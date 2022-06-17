@@ -1,3 +1,4 @@
+const Sentry = require("@sentry/nextjs");
 const { google } = require('googleapis');
 const prisma = require('../services/prisma');
 const workerUtils = require('../services/graphileWorker');
@@ -69,6 +70,7 @@ module.exports = async (payload, helpers) => {
           break;
         }
       } catch (e) {
+        Sentry.captureException(e);
         helpers.logger.error(`Failed Google/Gmail message fetch for ${owner}`);
         helpers.logger.error(e);
         break;
@@ -105,6 +107,7 @@ const importHistoryItem = async (owner, messageId, gmail, helpers) => {
     }
 
   } catch (e) {
+    Sentry.captureException(e);
     helpers.logger.error(`Failed Google/Gmail message detail fetch for ${owner}`);
     helpers.logger.error(e);
   }

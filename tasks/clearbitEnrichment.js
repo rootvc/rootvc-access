@@ -1,3 +1,4 @@
+const Sentry = require("@sentry/nextjs");
 const prisma = require('../services/prisma');
 const clearbit = require('clearbit')(process.env['CLEARBIT_API_KEY']);
 
@@ -19,7 +20,9 @@ module.exports = async (payload, helpers) => {
         await prisma.ClearbitEnrichment.create({
           data: { email: email }
         });
+        // TODO: Other errors, like Clearbit API request limit reached
       } else {
+        Sentry.captureException(error);
         helpers.logger.error(`API ClearbitEnrichment error for ${email}`);
         helpers.logger.error(error);
       }

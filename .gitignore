@@ -107,3 +107,6 @@ README-private.md
 Dockerfile
 
 build
+
+# Sentry
+.sentryclirc
