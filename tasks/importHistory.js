@@ -1,7 +1,7 @@
 const Sentry = require("@sentry/nextjs");
 const { google } = require('googleapis');
 const prisma = require('../services/prisma');
-const workerUtils = require('../services/graphileWorker');
+const worker = require('../services/graphileWorker');
 
 // Gmail API rate limits at 10 requests/second.
 // This job implements a bootleg rate limiter.
@@ -133,10 +133,10 @@ const emailsFromEmailField = (emailField) => {
 };
 
 const enqueueRecordEmailJob = async (data) => {
-  const utils = await workerUtils;
+  const utils = await worker;
+
   return await utils.addJob(
     'recordEmail',
-    data,
-    { queueName: 'main' }
+    data
   );
 }

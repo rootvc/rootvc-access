@@ -7,8 +7,7 @@ import worker from '../services/graphileWorker'
 
 // BUG: This doesn't process any existing jobs, only newly added ones.
 async function main() {
-  await worker.init();
-  console.log("[startup] Initialized Graphile worker service.");
+  worker.init().then(w => w.listen());
 }
 
 main()

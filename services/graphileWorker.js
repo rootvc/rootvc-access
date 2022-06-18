@@ -3,29 +3,22 @@ const connectionString = process.env.DATABASE_URL;
 
 class Worker {
   async init() {
-    const relPath = process.env.NODE_ENV == "production"
-      ? "/../../../tasks"
-      : "/../../../../tasks";
-
     this.workerUtils = await makeWorkerUtils({
       connectionString: connectionString,
-      concurrency: 1, // must be 1 to support historical record import
-      noHandleSignals: false,
-      pollInterval: 1000,
-      taskDirectory: `${__dirname}${relPath}`,
     });
-
     await this.workerUtils.migrate();
+    return this;
+  }
 
+  async listen() {
     const runner = await run({
       connectionString: connectionString,
       concurrency: 1, // must be 1 to support historical record import
       noHandleSignals: false,
-      pollInterval: 1000,
-      taskDirectory: `${__dirname}${relPath}`,
+      pollInterval: 2000,
+      taskDirectory: `${__dirname}/../../../../tasks`
     });
 
-    // If the worker exits (whether through fatal error or otherwise), this promise will resolve/reject:
     await runner.promise;
   }
 
@@ -33,11 +26,13 @@ class Worker {
     return await this.workerUtils.addJob(
       name,
       data,
-      opts
+      {}
+      // { queueName: 'main' }
     );
   }
 }
 
 const worker = global.worker || new Worker();
 global.worker = worker;
+
 module.exports = worker;

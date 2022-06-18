@@ -12,7 +12,7 @@ module.exports = async (payload, helpers) => {
     try {
       const res = await clearbit.Enrichment.find({ email: email, stream: true });
       record = createClearbitEnrichment(email, res, helpers);
-      helpers.logger.info(`API ClearbitEnrichment: ${email}`);
+      helpers.logger.info(`API Fetch: ClearbitEnrichment: ${email}`);
     } catch (error) {
       if (error instanceof clearbit.Enrichment.NotFoundError) {
         helpers.logger.error(`NOT FOUND: API ClearbitEnrichment could not find Enrichment for: ${email}`)
@@ -20,7 +20,7 @@ module.exports = async (payload, helpers) => {
         await prisma.ClearbitEnrichment.create({
           data: { email: email }
         });
-        // TODO: Other errors, like Clearbit API request limit reached
+        // TODO: Other errors, like Clearbit API monthly request limit reached
       } else {
         Sentry.captureException(error);
         helpers.logger.error(`API ClearbitEnrichment error for ${email}`);
@@ -29,16 +29,18 @@ module.exports = async (payload, helpers) => {
     }
   }
   else {
-    helpers.logger.info(`CACHE HIT: ClearbitEnrichment: ${email}`);
+    helpers.logger.info(`Cache Hit: ClearbitEnrichment: ${email}`);
   }
 
   // If record was found in either cache (db) or API
+  // TODO: skip Person/Company if previously enriched in the last - year?
+  // TODO: Record foreign keys for Person and Company?
   if (record) {
     person = record.raw ? record.raw.person : null;
     company = record.raw ? record.raw.company : null;
 
     // enrich Person record
-    if (person) { // TODO and not previously enriched
+    if (person) {
       await upsertPerson(person, company ? company.id : null, helpers);
       helpers.logger.info(`Enriched Person: ${email}`);
     } else {
@@ -46,7 +48,7 @@ module.exports = async (payload, helpers) => {
     };
 
     // enrich Company record
-    if (company) { // TODO and not previously enriched
+    if (company) {
       await upsertCompany(company, helpers);
       helpers.logger.info(`Enriched Company for: ${email}`);
     } else {

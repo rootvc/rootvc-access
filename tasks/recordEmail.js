@@ -1,6 +1,6 @@
 const Sentry = require("@sentry/nextjs");
 const prisma = require('../services/prisma');
-const workerUtils = require('../services/graphileWorker');
+const worker = require('../services/graphileWorker');
 
 // TODO: Enqueue child jobs selectively
 
@@ -127,10 +127,10 @@ const upsertPerson = async (p, helpers) => {
 
 // Enqueue enrichment job for async processing
 const enqueueEnrichmentJob = async (email) => {
-  const utils = await workerUtils;
+  const utils = await worker.workerUtils;
+
   return await utils.addJob(
     'clearbitEnrichment',
-    { email: email },
-    { queueName: 'main' }
+    { email: email }
   );
 };

@@ -1,4 +1,4 @@
-const workerUtils = require('../../../../services/graphileWorker');
+const worker = require('../../../../services/graphileWorker');
 const SuperTokensNode = require('supertokens-node');
 const { backendConfig } = require('../../../../config/backendConfig');
 import { withSentry } from '@sentry/nextjs';
@@ -37,12 +37,20 @@ const handler = async (req, res) => {
 
 // Enqueue record email job for async processing
 const enqueueRecordEmailJob = async (data) => {
-  const utils = await workerUtils;
+  const utils = await worker;
+
   return await utils.addJob(
     'recordEmail',
-    data,
-    { queueName: 'main' }
+    data
   );
+};
+
+// horrible hack to get around a sentry + next bug
+// https://github.com/getsentry/sentry-javascript/issues/3852
+export const config = {
+  api: {
+    externalResolver: true,
+  },
 };
 
 export default withSentry(handler);

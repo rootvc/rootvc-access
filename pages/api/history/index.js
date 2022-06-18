@@ -4,7 +4,7 @@ const { verifySession } = require("supertokens-node/recipe/session/framework/exp
 const SuperTokensNode = require('supertokens-node');
 const { backendConfig } = require('../../../config/backendConfig');
 const prisma = require('../../../services/prisma');
-const workerUtils = require('../../../services/graphileWorker');
+const worker = require('../../../services/graphileWorker');
 
 const handler = async (req, res) => {
   const body = req.body
@@ -30,15 +30,23 @@ const handler = async (req, res) => {
 };
 
 const enqueueImportHistoryJob = async (owner, pageToken) => {
-  const utils = await workerUtils;
+  const utils = await worker;
+
   return await utils.addJob(
     'importHistory',
     {
       owner: owner,
       pageToken: pageToken
-    },
-    { queueName: 'main' }
+    }
   );
+};
+
+// horrible hack to get around a sentry + next bug
+// https://github.com/getsentry/sentry-javascript/issues/3852
+export const config = {
+  api: {
+    externalResolver: true,
+  },
 };
 
 export default withSentry(handler);

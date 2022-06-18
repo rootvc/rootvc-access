@@ -1,9 +1,11 @@
 import { withSentry } from '@sentry/nextjs';
-require("../../server/index");
+const server = require("../../server/index");
 
 // see the server/index endpoint to see what happens on startup
 
 const handler = async (req, res) => {
+  await server;
+
   res.statusCode = 200;
   res.status(200).json({ status: 200, message: "OK" });
 }
