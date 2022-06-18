@@ -26,8 +26,12 @@ class Worker {
     return await this.workerUtils.addJob(
       name,
       data,
-      {}
-      // { queueName: 'main' }
+      // using a queuename ensure sequential execution
+      // but it prevents the runner from picking up old jobs for some reason
+      // the workaround is to set queue_name to NULL directly in the database
+      // TODO: on worker startup, process the queue by running a SQL query
+      //       that updates old jobs to queue_name=NULL
+      { queueName: 'main' }
     );
   }
 }

@@ -7,9 +7,8 @@ const worker = require('../services/graphileWorker');
 // This job implements a bootleg rate limiter.
 // I am so sorry for how this is implemented.
 
-// TOOD: LogDNA? Shore up log formatting
-// TODO: Raise errors when a job should be re-run
 // TODO: Catch errors correctly like Clearbit not found
+// TODO: Only allow one history import job per user
 
 module.exports = async (payload, helpers) => {
   const pageSize = 10;
