@@ -44,7 +44,7 @@ module.exports = async (payload, helpers) => {
           includeSpamTrash: false,
           maxResults: pageSize,
           pageToken: pageToken,
-          q: "-label:CATEGORY_PROMOTIONS -label:CATEGORY_UPDATES", // filter out spam, newsletters etc.
+          q: "-label:CATEGORY_PROMOTIONS -label:CATEGORY_UPDATES -label:CATEGORY_FORUMS", // filter out spam, newsletters etc.
           userId: "me"
         });
         lastGoogleCall = new Date(Date.now());
