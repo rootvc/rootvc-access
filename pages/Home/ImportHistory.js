@@ -1,4 +1,4 @@
-export default function Logout(props) {
+export default function ImportHistory(props) {
   let importHistoryClicked = props.importHistoryClicked;
 
   return (

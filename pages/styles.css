@@ -10,6 +10,7 @@
 }
  
 body {
+    color: var(--brand-txt-color);
     background-color: var(--brand-black-color);
     font-family: "Abel";
 }
@@ -47,4 +48,12 @@ a {
     justifyContent: center;
     color: #ffffff;
     fontWeight: bold;
+}
+
+ul {
+    list-style: none;
+}
+
+li {
+    margin: 5px;
 }
