@@ -1,6 +1,8 @@
 const { run, makeWorkerUtils } = require('graphile-worker');
 const connectionString = process.env.DATABASE_URL;
 
+const relTaskPath = process.env.NODE_ENV == "production" ? "/../../../" : "/../../../../"
+
 class Worker {
   async init() {
     this.workerUtils = await makeWorkerUtils({
@@ -16,7 +18,7 @@ class Worker {
       concurrency: 1, // must be 1 to support historical record import
       noHandleSignals: false,
       pollInterval: 2000,
-      taskDirectory: `${__dirname}/../../../../tasks`
+      taskDirectory: `${__dirname}${relTaskPath}tasks`
     });
 
     await runner.promise;
